@@ -4,6 +4,8 @@ object-assign
 @license MIT
 */
 
+/*! jQuery v3.6.0 | (c) OpenJS Foundation and other contributors | jquery.org/license */
+
 /** @license React v0.20.2
  * scheduler.production.min.js
  *
