@@ -30,4 +30,8 @@ export default class Api {
         return this.init().get(url, data)
     }
 
+    addNewTask = (data) => {
+        return this.init().post("task/add", data)
+    }
+
 }

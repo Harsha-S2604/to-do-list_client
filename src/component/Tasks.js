@@ -31,8 +31,29 @@ export default class Task extends Component {
         }
     }
 
-    handleAddTask = () => {
-        console.log(this.state.taskName)
+    handleAddTask = async () => {
+        await this.props.changeLoading(true);
+        const data = {
+            "user": {
+                "userId": parseInt(this.props.cookies.get("todo_userid")),
+                "email": this.props.cookies.get("todo_email")
+            },
+            "taskName": this.state.taskName,
+            "isCompleted": false,
+        }
+        this.state.api.addNewTask(data)
+            .then(async(response) => {
+                console.log(response)
+                if(response.data.success) {
+                    await this.props.changeLoading(false)
+                    await this.handleGetTasks()
+                } else {
+                    await this.props.changeLoading(false)
+                }
+            })
+            .catch(async (err) => {
+                await this.props.changeLoading(false);
+            })
     }
 
     handleChange = (event) => {
@@ -58,6 +79,9 @@ export default class Task extends Component {
             .then(async (response) => {
                 if(response.data.success) {
                     await this.props.saveTasks(response.data.data)
+                    this.setState({
+                        taskName: "",
+                    })
                 }
                 await this.props.changeLoading(false)
                 this.setState({
