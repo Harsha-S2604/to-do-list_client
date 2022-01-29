@@ -4,7 +4,11 @@ export default class Api {
 
     constructor() {
         this.client = null
-        this.api_url = process.env.REACT_APP_API_DEV_ENDPOINT
+        this.api_url = process.env.REACT_APP_API_PRODUCTION_ENDPOINT
+        if(process.env.NODE_ENV === 'development') {
+            console.log("demo")
+            this.api_url = process.env.REACT_APP_API_DEV_ENDPOINT
+        } 
     }
 
     init = () => {
