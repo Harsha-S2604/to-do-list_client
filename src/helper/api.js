@@ -34,4 +34,14 @@ export default class Api {
         return this.init().post("task/add", data)
     }
 
+    removeTask = (task_id) => {
+        let url = "task/remove/"+task_id
+        return this.init().delete(url)
+    }
+
+    updateTask = (task_id, formData) => {
+        let url = "task/update/"+task_id
+        return this.init().put(url, formData)
+    }
+
 }

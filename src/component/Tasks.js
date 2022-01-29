@@ -12,19 +12,23 @@ export default class Task extends Component {
             taskName: "",
             tasks: this.props.tasks,
             taskErrMsg: "",
+            deleteUpdateErrMsg: "",
             api: new Api()
         }
     }
 
     componentDidMount() {
         this.handleGetTasks()
+    }
+
+    setDeleteErrMsg = (msg) => {
         this.setState({
-            tasks: []
+            deleteUpdateErrMsg: msg
         })
     }
 
     componentDidUpdate(prevProps) {
-        if(prevProps.tasks != this.state.tasks) {
+        if(prevProps.tasks !== this.state.tasks) {
             this.setState({
                 tasks: this.props.tasks
             })
@@ -63,6 +67,7 @@ export default class Task extends Component {
                 this.setState({
                     taskName: value
                 })
+                break;
             default:
                 break;
         }
@@ -119,11 +124,16 @@ export default class Task extends Component {
                     <div className="pt-5">
                         <h3><b>Your tasks</b></h3>
                         {
+                            this.state.deleteErrMsg ? 
+                            <p className='pt-4'>{this.state.deleteUpdateErrMsg}</p> : null
+                        }
+                        {
                             this.state.tasks.length > 0 ?
                                 this.state.tasks.map((task, index) => {
                                     return (
                                         <div className="pt-5" key={task.TaskId}>
-                                            <TaskCard key={task.TaskId} task={task} />
+                                            <TaskCard key={task.TaskId} task={task} setDeleteErrMsg={this.setDeleteErrMsg} 
+                                            getTasksHandler={this.handleGetTasks}/>
                                         </div>
                                     )
                                 })
