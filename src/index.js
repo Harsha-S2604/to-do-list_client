@@ -3,6 +3,10 @@ import ReactDOM from 'react-dom';
 import './index.css';
 import reportWebVitals from './reportWebVitals';
 import ToDoList from './component/ToDoList';
+import { Provider } from 'react-redux';
+import { CookiesProvider } from 'react-cookie';
+
+import store from './store/store';
 
 import "bootstrap/dist/css/bootstrap.min.css";
 import "bootstrap/dist/js/bootstrap.min.js";
@@ -10,7 +14,11 @@ import 'jquery/dist/jquery.min.js';
 
 ReactDOM.render(
   <React.StrictMode>
-    <ToDoList />
+    <CookiesProvider>
+      <Provider store={store}>
+        <ToDoList />
+      </Provider>
+    </CookiesProvider>
   </React.StrictMode>,
   document.getElementById('root')
 );

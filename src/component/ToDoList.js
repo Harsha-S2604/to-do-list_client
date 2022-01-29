@@ -1,95 +1,40 @@
 import React, {Component} from "react";
-import TaskCard from "./TaskCard";
+import { withCookies } from 'react-cookie';
+import GetStarted from "./GetStarted";
+import { addTask, changeLoading, getTasks, saveTasks } from "../actions/taskConfig";
+import { connect } from "react-redux";
+import Tasks from './Tasks';
 
-export default class ToDoList extends Component {
 
-    constructor(props) {
-        super(props);
-        this.state = {
-            taskName: "",
-            tasks: []
-        }
-    }
+class ToDoList extends Component {
 
-    componentDidMount() {
-        const responseJson = {	
-            success: true,
-            tasks: [
-                        {
-                            "TaskName": "demo_1",
-                            "IsCompleted": false
-                        },
-                        {
-                            "TaskName": "demo_2",
-                            "IsCompleted": true
-                        },
-                        {
-                            "TaskName": "demo_3",
-                            "IsCompleted": true
-                        },
-                        {
-                            "TaskName": "demo_4",
-                            "IsCompleted": false
-                        },
-                        {
-                            "TaskName": "demo_5",
-                            "IsCompleted": false
-                        }
-                    ]
-        }
 
-        this.setState({
-            tasks: responseJson.tasks
-        })
-    }
 
-    handleAddTask = () => {
-        console.log(this.state.taskName)
-    }
-
-    handleChange = (event) => {
-        const {name, value} = event.target
-        switch(name) {
-            case "taskName":
-                this.setState({
-                    taskName: value
-                })
-            default:
-                break;
-        }
-    }
     render() {
-        const isDisabled = !(this.state.taskName)
         return (
             <div style={{paddingTop: "70px"}}>
                 <center>
-                    <div>
-                        <h1>To-Do List</h1>
-                        <div className="pt-5">
-                            <input placeholder="type your task here" 
-                                className="todo__input" 
-                                type="text"
-                                name="taskName"
-                                id="taskName"
-                                onChange={this.handleChange}
-                                value={this.state.taskName}/>
-                            <button className="btn btn-outline-light" onClick={this.handleAddTask} style={{marginLeft:"20px"}} disabled={isDisabled}>add</button>
-                        </div>
-                    </div>
-                    <div className="pt-5">
-                        <h3><b>Your tasks</b></h3>
-                        {
-                            this.state.tasks.map((task, index) => {
-                                return (
-                                    <div className="pt-5">
-                                        <TaskCard task={task} key={index} />
-                                    </div>
-                                )
-                            })
-                        }
-                    </div>
+                    <h1>To-Do List</h1>
+                    {
+                       !(this.props.cookies.get("todo_userid") && this.props.cookies.get("todo_email")) ?
+                        <GetStarted {...this.props}/> : 
+                        <Tasks {...this.props}/>
+                    }
                 </center>
             </div>
         )
     }
 }
+
+const mapStatetoProps = (state) => {
+    let { taskConfig } = state;
+    return { ...taskConfig }
+}
+
+const mapDispatchToProps = (dispatch) => {
+    return {
+        changeLoading: (isLoading) => dispatch(changeLoading(isLoading)),
+        saveTasks: (tasks) => dispatch(saveTasks(tasks))
+    }
+}
+export default connect(mapStatetoProps, mapDispatchToProps)(withCookies(ToDoList))
