@@ -9,10 +9,20 @@ import Tasks from './Tasks';
 class ToDoList extends Component {
 
 
+    handleClearCookies = () => {
+        this.props.cookies.remove("todo_userid")
+        this.props.cookies.remove("todo_email")
+
+    }
 
     render() {
         return (
             <div style={{paddingTop: "70px"}}>
+                {(this.props.cookies.get("todo_userid") && this.props.cookies.get("todo_email")) ?
+                <div className="container">
+                    <button className="btn btn-outline-light" onClick={this.handleClearCookies} style={{float: "right"}}>log out</button><br /><br />
+                </div>:null}
+
                 <center>
                     <h1>To-Do List</h1>
                     {
