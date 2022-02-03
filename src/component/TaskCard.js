@@ -17,7 +17,7 @@ export default class TaskCard extends Component {
         this.state.api.updateTask(taskId, formData)
             .then(async (response) => {
                 if(response.data.success) {
-                    await this.props.getTasksHandler()
+                    await this.props.getTasksHandler(this.props.offset)
                     this.props.setDeleteErrMsg("")
                 } else {
                     this.props.setDeleteErrMsg(response.data.message)
@@ -32,7 +32,7 @@ export default class TaskCard extends Component {
         this.state.api.removeTask(taskId)
             .then(async (response) => {
                 if(response.data.success) {
-                    await this.props.getTasksHandler()
+                    await this.props.getTasksHandler(this.props.offset)
                     this.props.setDeleteErrMsg("")
                 } else {
                     this.props.setDeleteErrMsg(response.data.message)

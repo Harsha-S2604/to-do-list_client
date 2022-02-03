@@ -2,6 +2,7 @@ import React, {Component} from 'react';
 import Api from '../helper/api';
 import Loader from './Loader';
 import TaskCard from "./TaskCard";
+import ReactPaginate from 'react-paginate';
 
 
 export default class Task extends Component {
@@ -13,12 +14,16 @@ export default class Task extends Component {
             tasks: this.props.tasks,
             taskErrMsg: "",
             deleteUpdateErrMsg: "",
+            pageCount: 0,
+            totalList: 0,
+            currentPage: 1,
+            offset: 0,
             api: new Api()
         }
     }
 
     componentDidMount() {
-        this.handleGetTasks()
+        this.handleGetTasks(0)
     }
 
     setDeleteErrMsg = (msg) => {
@@ -73,20 +78,32 @@ export default class Task extends Component {
         }
     }
 
-    handleGetTasks = async () => {
+    handlePageClick = async (event) => {
+        let offset = (event.selected * 5) % this.state.totalList
+        this.setState({
+            offset
+        })
+        this.handleGetTasks(offset)
+    }
+
+    handleGetTasks = async (offset) => {
         await this.props.changeLoading(true)
         const data = {
             "userId": this.props.cookies.get("todo_userid"),
             "email": this.props.cookies.get("todo_email")
         }
 
-        this.state.api.getTasks(data, 5, 1)
+        this.state.api.getTasks(data, 5, offset)
             .then(async (response) => {
                 if(response.data.success) {
                     await this.props.saveTasks(response.data.data)
+                    let pageCount = Math.ceil(response.data.totalList / 5)
                     this.setState({
                         taskName: "",
+                        pageCount,
+                        totalList: response.data.totalList
                     })
+
                 }
                 await this.props.changeLoading(false)
                 this.setState({
@@ -116,12 +133,28 @@ export default class Task extends Component {
                             value={this.state.taskName}/>
                         <button className="btn btn-outline-light" onClick={this.handleAddTask} style={{marginLeft:"20px"}} disabled={isDisabled}>add</button>
                     </div>
+                </div><br/><br />
+                <div>
+                    <ReactPaginate
+                            previousLabel={"Back"}
+                            nextLabel={"Next"}
+                            breakLabel={"..."}
+                            breakClassName={"break-me"}
+                            pageCount={this.state.pageCount}
+                            // marginPagesDisplayed={2}
+                            pageRangeDisplayed={5}
+                            onPageChange={this.handlePageClick}
+                            containerClassName={"pagination"}
+                            subContainerClassName={"pages pagination"}
+                            activeClassName={"active"}     
+                            renderOnZeroPageCount={null}/>
                 </div>
                 {
                     this.props.isLoading ? 
                     <Loader message="loading..."/> : 
                 
                     <div className="pt-5">
+                        
                         <h3><b>Your tasks</b></h3>
                         {
                             this.state.deleteErrMsg ? 
@@ -132,7 +165,7 @@ export default class Task extends Component {
                                 this.state.tasks.map((task, index) => {
                                     return (
                                         <div className="pt-5" key={task.TaskId}>
-                                            <TaskCard key={task.TaskId} task={task} setDeleteErrMsg={this.setDeleteErrMsg} 
+                                            <TaskCard key={task.TaskId} task={task} offset={this.state.offset} setDeleteErrMsg={this.setDeleteErrMsg} 
                                             getTasksHandler={this.handleGetTasks}/>
                                         </div>
                                     )
